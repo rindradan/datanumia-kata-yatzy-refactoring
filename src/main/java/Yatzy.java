@@ -1,4 +1,6 @@
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class Yatzy {
 
@@ -9,14 +11,12 @@ public class Yatzy {
         return Arrays.stream(dices).sum();
     }
 
-    public int yatzy(int... dices)
+    public int yatzy(int d1, int d2, int d3, int d4, int d5)
     {
-        int[] counts = new int[6];
-        for (int die : dices)
-            counts[die-1]++;
-        for (int i = 0; i != 6; i++)
-            if (counts[i] == 5)
-                return 50;
+        List<Integer> dices = Arrays.asList(d1, d2, d3, d4, d5);
+        if (dices.stream().allMatch(dice -> Objects.equals(dice, dices.get(0)))) {
+            return 50;
+        }
         return 0;
     }
 
