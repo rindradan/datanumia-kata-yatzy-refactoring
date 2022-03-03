@@ -75,7 +75,7 @@ public class YatzyTest {
     }
 
     @Test
-    public void two_Pair() {
+    public void two_pair() {
         Yatzy yatzy = new Yatzy();
         assertEquals(16, yatzy.two_pair(3,3,5,4,5));
         assertEquals(16, yatzy.two_pair(3,3,5,5,5));

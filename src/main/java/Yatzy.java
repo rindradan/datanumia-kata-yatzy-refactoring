@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -57,23 +60,7 @@ public class Yatzy {
 
     public int two_pair(int d1, int d2, int d3, int d4, int d5)
     {
-        int[] counts = new int[6];
-        counts[d1-1]++;
-        counts[d2-1]++;
-        counts[d3-1]++;
-        counts[d4-1]++;
-        counts[d5-1]++;
-        int n = 0;
-        int score = 0;
-        for (int i = 0; i < 6; i += 1)
-            if (counts[6-i-1] >= 2) {
-                n++;
-                score += (6-i);
-            }        
-        if (n == 2)
-            return score * 2;
-        else
-            return 0;
+        return findOccurrences(2, d1, d2, d3, d4, d5).stream().reduce(0, Integer::sum) * 2;
     }
 
     public int threeOfAKind(int d1, int d2, int d3, int d4, int d5)
@@ -167,16 +154,19 @@ public class Yatzy {
         return dicesAsList(d1, d2, d3, d4, d5).stream().filter(dice -> dice == reference).reduce(0, Integer::sum);
     }
 
-    private int sumByOccurrence(int occurrence, int d1, int d2, int d3, int d4, int d5) {
+    private List<Integer> findOccurrences(int occurrenceCount, int d1, int d2, int d3, int d4, int d5) {
         Map<Integer, Long> diceGroup = dicesAsList(d1, d2, d3, d4, d5).stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        List<Integer> pairs = diceGroup.entrySet().stream()
-            .filter(entry -> entry.getValue() >= occurrence)
+        return diceGroup.entrySet().stream()
+            .filter(entry -> entry.getValue() >= occurrenceCount)
             .sorted(Map.Entry.<Integer, Long>comparingByKey().reversed())
             .map(Map.Entry::getKey)
             .collect(Collectors.toList());
-        return pairs.get(0) * occurrence;
+    }
+
+    private int sumByOccurrence(int occurrenceCount, int d1, int d2, int d3, int d4, int d5) {
+        int sum = findOccurrences(occurrenceCount, d1, d2, d3, d4, d5).stream()
+            .limit(1)
+            .reduce(0, Integer::sum);
+        return sum * occurrenceCount;
     }
 }
-
-
-
