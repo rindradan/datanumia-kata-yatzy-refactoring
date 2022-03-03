@@ -20,68 +20,34 @@ public class Yatzy {
         return 0;
     }
 
-    public int ones(int d1, int d2, int d3, int d4, int d5) {
-        int sum = 0;
-        if (d1 == 1) sum++;
-        if (d2 == 1) sum++;
-        if (d3 == 1) sum++;
-        if (d4 == 1) sum++;
-        if (d5 == 1) 
-            sum++;
-
-        return sum;
-    }
-
-    public int twos(int d1, int d2, int d3, int d4, int d5) {
-        int sum = 0;
-        if (d1 == 2) sum += 2;
-        if (d2 == 2) sum += 2;
-        if (d3 == 2) sum += 2;
-        if (d4 == 2) sum += 2;
-        if (d5 == 2) sum += 2;
-        return sum;
-    }
-
-    public int threes(int d1, int d2, int d3, int d4, int d5) {
-        int s;    
-        s = 0;
-        if (d1 == 3) s += 3;
-        if (d2 == 3) s += 3;
-        if (d3 == 3) s += 3;
-        if (d4 == 3) s += 3;
-        if (d5 == 3) s += 3;
-        return s;
-    }
-
-    public int fours(int... dices)
+    public int ones(int d1, int d2, int d3, int d4, int d5)
     {
-        int sum;    
-        sum = 0;
-        for (int at = 0; at != 5; at++) {
-            if (dices[at] == 4) {
-                sum += 4;
-            }
-        }
-        return sum;
+        return sumBy(1, d1, d2, d3, d4, d5);
     }
 
-    public int fives(int... dices)
+    public int twos(int d1, int d2, int d3, int d4, int d5)
     {
-        int s = 0;
-        int i;
-        for (i = 0; i < dices.length; i++)
-            if (dices[i] == 5)
-                s = s + 5;
-        return s;
+        return sumBy(2, d1, d2, d3, d4, d5);
     }
 
-    public int sixes(int... dices)
+    public int threes(int d1, int d2, int d3, int d4, int d5)
     {
-        int sum = 0;
-        for (int at = 0; at < dices.length; at++)
-            if (dices[at] == 6)
-                sum = sum + 6;
-        return sum;
+        return sumBy(3, d1, d2, d3, d4, d5);
+    }
+
+    public int fours(int d1, int d2, int d3, int d4, int d5)
+    {
+        return sumBy(4, d1, d2, d3, d4, d5);
+    }
+
+    public int fives(int d1, int d2, int d3, int d4, int d5)
+    {
+        return sumBy(5, d1, d2, d3, d4, d5);
+    }
+
+    public int sixes(int d1, int d2, int d3, int d4, int d5)
+    {
+        return sumBy(6, d1, d2, d3, d4, d5);
     }
 
     public int score_pair(int d1, int d2, int d3, int d4, int d5)
@@ -225,6 +191,10 @@ public class Yatzy {
 
     private List<Integer> dicesAsList(int d1, int d2, int d3, int d4, int d5) {
         return Arrays.asList(d1, d2, d3, d4, d5);
+    }
+
+    private int sumBy(int reference, int d1, int d2, int d3, int d4, int d5) {
+        return dicesAsList(d1, d2, d3, d4, d5).stream().filter(dice -> dice == reference).reduce(0, Integer::sum);
     }
 }
 
