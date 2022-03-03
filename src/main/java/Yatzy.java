@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -55,22 +52,22 @@ public class Yatzy {
 
     public int pair(int d1, int d2, int d3, int d4, int d5)
     {
-        return sumByOccurrence(2, d1, d2, d3, d4, d5);
+        return sumByOccurrence(2, 1, d1, d2, d3, d4, d5);
     }
 
     public int two_pair(int d1, int d2, int d3, int d4, int d5)
     {
-        return findOccurrences(2, d1, d2, d3, d4, d5).stream().reduce(0, Integer::sum) * 2;
+        return sumByOccurrence(2, 2, d1, d2, d3, d4, d5);
     }
 
     public int threeOfAKind(int d1, int d2, int d3, int d4, int d5)
     {
-        return sumByOccurrence(3, d1, d2, d3, d4, d5);
+        return sumByOccurrence(3, 1, d1, d2, d3, d4, d5);
     }
 
     public int fourOfAKind(int d1, int d2, int d3, int d4, int d5)
     {
-        return sumByOccurrence(4, d1, d2, d3, d4, d5);
+        return sumByOccurrence(4, 1, d1, d2, d3, d4, d5);
     }
 
     public int smallStraight(int d1, int d2, int d3, int d4, int d5)
@@ -111,40 +108,14 @@ public class Yatzy {
 
     public int fullHouse(int d1, int d2, int d3, int d4, int d5)
     {
-        int[] tallies;
-        boolean _2 = false;
-        int i;
-        int _2_at = 0;
-        boolean _3 = false;
-        int _3_at = 0;
-
-
-
-
-        tallies = new int[6];
-        tallies[d1-1] += 1;
-        tallies[d2-1] += 1;
-        tallies[d3-1] += 1;
-        tallies[d4-1] += 1;
-        tallies[d5-1] += 1;
-
-        for (i = 0; i != 6; i += 1)
-            if (tallies[i] == 2) {
-                _2 = true;
-                _2_at = i+1;
-            }
-
-        for (i = 0; i != 6; i += 1)
-            if (tallies[i] == 3) {
-                _3 = true;
-                _3_at = i+1;
-            }
-
-        if (_2 && _3)
-            return _2_at * 2 + _3_at * 3;
-        else
-            return 0;
+        Map<Integer, Long> dicesGroup = dicesGroup(d1, d2, d3, d4, d5);
+        if (dicesGroup.containsValue(3L) && dicesGroup.containsValue(2L)) {
+            return dicesGroup.entrySet().stream().map(dice -> dice.getKey() * dice.getValue()).reduce(0L, Long::sum).intValue();
+        }
+        return 0;
     }
+
+    //*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
 
     private List<Integer> dicesAsList(int d1, int d2, int d3, int d4, int d5) {
         return Arrays.asList(d1, d2, d3, d4, d5);
@@ -154,18 +125,17 @@ public class Yatzy {
         return dicesAsList(d1, d2, d3, d4, d5).stream().filter(dice -> dice == reference).reduce(0, Integer::sum);
     }
 
-    private List<Integer> findOccurrences(int occurrenceCount, int d1, int d2, int d3, int d4, int d5) {
-        Map<Integer, Long> diceGroup = dicesAsList(d1, d2, d3, d4, d5).stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        return diceGroup.entrySet().stream()
-            .filter(entry -> entry.getValue() >= occurrenceCount)
-            .sorted(Map.Entry.<Integer, Long>comparingByKey().reversed())
-            .map(Map.Entry::getKey)
-            .collect(Collectors.toList());
+    private Map<Integer, Long> dicesGroup(int d1, int d2, int d3, int d4, int d5) {
+        return dicesAsList(d1, d2, d3, d4, d5).stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
-    private int sumByOccurrence(int occurrenceCount, int d1, int d2, int d3, int d4, int d5) {
-        int sum = findOccurrences(occurrenceCount, d1, d2, d3, d4, d5).stream()
-            .limit(1)
+    private int sumByOccurrence(int occurrenceCount, int limit, int d1, int d2, int d3, int d4, int d5) {
+        Map<Integer, Long> dicesGroup = dicesGroup(d1, d2, d3, d4, d5);
+        int sum = dicesGroup.entrySet().stream()
+            .filter(entry -> entry.getValue() >= occurrenceCount)
+            .map(Map.Entry::getKey)
+            .sorted(Comparator.reverseOrder())
+            .limit(limit)
             .reduce(0, Integer::sum);
         return sum * occurrenceCount;
     }
