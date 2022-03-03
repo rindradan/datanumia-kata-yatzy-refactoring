@@ -1,6 +1,6 @@
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Yatzy {
 
@@ -50,19 +50,9 @@ public class Yatzy {
         return sumBy(6, d1, d2, d3, d4, d5);
     }
 
-    public int score_pair(int d1, int d2, int d3, int d4, int d5)
+    public int pair(int d1, int d2, int d3, int d4, int d5)
     {
-        int[] counts = new int[6];
-        counts[d1-1]++;
-        counts[d2-1]++;
-        counts[d3-1]++;
-        counts[d4-1]++;
-        counts[d5-1]++;
-        int at;
-        for (at = 0; at != 6; at++)
-            if (counts[6-at-1] >= 2)
-                return (6-at)*2;
-        return 0;
+        return sumByOccurrence(2, d1, d2, d3, d4, d5);
     }
 
     public int two_pair(int d1, int d2, int d3, int d4, int d5)
@@ -86,34 +76,14 @@ public class Yatzy {
             return 0;
     }
 
-    public int four_of_a_kind(int _1, int _2, int d3, int d4, int d5)
+    public int threeOfAKind(int d1, int d2, int d3, int d4, int d5)
     {
-        int[] tallies;
-        tallies = new int[6];
-        tallies[_1-1]++;
-        tallies[_2-1]++;
-        tallies[d3-1]++;
-        tallies[d4-1]++;
-        tallies[d5-1]++;
-        for (int i = 0; i < 6; i++)
-            if (tallies[i] >= 4)
-                return (i+1) * 4;
-        return 0;
+        return sumByOccurrence(3, d1, d2, d3, d4, d5);
     }
 
-    public int three_of_a_kind(int d1, int d2, int d3, int d4, int d5)
+    public int fourOfAKind(int d1, int d2, int d3, int d4, int d5)
     {
-        int[] t;
-        t = new int[6];
-        t[d1-1]++;
-        t[d2-1]++;
-        t[d3-1]++;
-        t[d4-1]++;
-        t[d5-1]++;
-        for (int i = 0; i < 6; i++)
-            if (t[i] >= 3)
-                return (i+1) * 3;
-        return 0;
+        return sumByOccurrence(4, d1, d2, d3, d4, d5);
     }
 
     public int smallStraight(int d1, int d2, int d3, int d4, int d5)
@@ -195,6 +165,16 @@ public class Yatzy {
 
     private int sumBy(int reference, int d1, int d2, int d3, int d4, int d5) {
         return dicesAsList(d1, d2, d3, d4, d5).stream().filter(dice -> dice == reference).reduce(0, Integer::sum);
+    }
+
+    private int sumByOccurrence(int occurrence, int d1, int d2, int d3, int d4, int d5) {
+        Map<Integer, Long> diceGroup = dicesAsList(d1, d2, d3, d4, d5).stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        List<Integer> pairs = diceGroup.entrySet().stream()
+            .filter(entry -> entry.getValue() >= occurrence)
+            .sorted(Map.Entry.<Integer, Long>comparingByKey().reversed())
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
+        return pairs.get(0) * occurrence;
     }
 }
 
