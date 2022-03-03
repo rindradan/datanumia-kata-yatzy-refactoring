@@ -1,5 +1,6 @@
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Yatzy {
@@ -72,47 +73,20 @@ public class Yatzy {
 
     public int smallStraight(int d1, int d2, int d3, int d4, int d5)
     {
-        int[] tallies;
-        tallies = new int[6];
-        tallies[d1-1] += 1;
-        tallies[d2-1] += 1;
-        tallies[d3-1] += 1;
-        tallies[d4-1] += 1;
-        tallies[d5-1] += 1;
-        if (tallies[0] == 1 &&
-            tallies[1] == 1 &&
-            tallies[2] == 1 &&
-            tallies[3] == 1 &&
-            tallies[4] == 1)
-            return 15;
-        return 0;
+        Predicate<Map<Integer, Long>> predicate = dicesGroup -> dicesGroup.size() == 5 && dicesGroup.containsKey(1) && !dicesGroup.containsKey(6);
+        return sumByPredicate(predicate, d1, d2, d3, d4, d5);
     }
 
     public int largeStraight(int d1, int d2, int d3, int d4, int d5)
     {
-        int[] tallies;
-        tallies = new int[6];
-        tallies[d1-1] += 1;
-        tallies[d2-1] += 1;
-        tallies[d3-1] += 1;
-        tallies[d4-1] += 1;
-        tallies[d5-1] += 1;
-        if (tallies[1] == 1 &&
-            tallies[2] == 1 &&
-            tallies[3] == 1 &&
-            tallies[4] == 1
-            && tallies[5] == 1)
-            return 20;
-        return 0;
+        Predicate<Map<Integer, Long>> predicate = dicesGroup -> dicesGroup.size() == 5 && !dicesGroup.containsKey(1) && dicesGroup.containsKey(6);
+        return sumByPredicate(predicate, d1, d2, d3, d4, d5);
     }
 
     public int fullHouse(int d1, int d2, int d3, int d4, int d5)
     {
-        Map<Integer, Long> dicesGroup = dicesGroup(d1, d2, d3, d4, d5);
-        if (dicesGroup.containsValue(3L) && dicesGroup.containsValue(2L)) {
-            return dicesGroup.entrySet().stream().map(dice -> dice.getKey() * dice.getValue()).reduce(0L, Long::sum).intValue();
-        }
-        return 0;
+        Predicate<Map<Integer, Long>> predicate = dicesGroup -> dicesGroup.containsValue(3L) && dicesGroup.containsValue(2L);
+        return sumByPredicate(predicate, d1, d2, d3, d4, d5);
     }
 
     //*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
@@ -138,5 +112,13 @@ public class Yatzy {
             .limit(limit)
             .reduce(0, Integer::sum);
         return sum * occurrenceCount;
+    }
+
+    private int sumByPredicate(Predicate<Map<Integer, Long>> predicate, int d1, int d2, int d3, int d4, int d5) {
+        Map<Integer, Long> dicesGroup = dicesGroup(d1, d2, d3, d4, d5);
+        if (predicate.test(dicesGroup)) {
+            return dicesGroup.entrySet().stream().map(dice -> dice.getKey() * dice.getValue()).reduce(0L, Long::sum).intValue();
+        }
+        return 0;
     }
 }

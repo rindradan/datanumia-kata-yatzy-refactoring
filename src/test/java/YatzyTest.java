@@ -99,7 +99,7 @@ public class YatzyTest {
     }
 
     @Test
-    public void smallStraight() {
+    public void small_straight() {
         Yatzy yatzy = new Yatzy();
         assertEquals(15, yatzy.smallStraight(1,2,3,4,5));
         assertEquals(15, yatzy.smallStraight(2,3,4,5,1));
@@ -107,7 +107,7 @@ public class YatzyTest {
     }
 
     @Test
-    public void largeStraight() {
+    public void large_straight() {
         Yatzy yatzy = new Yatzy();
         assertEquals(20, yatzy.largeStraight(6,2,3,4,5));
         assertEquals(20, yatzy.largeStraight(2,3,4,5,6));
