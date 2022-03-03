@@ -6,14 +6,14 @@ public class Yatzy {
 
     public Yatzy() {}
 
-    public int chance(int... dices)
+    public int chance(int d1, int d2, int d3, int d4, int d5)
     {
-        return Arrays.stream(dices).sum();
+        return dicesAsList(d1, d2, d3, d4, d5).stream().reduce(0, Integer::sum);
     }
 
     public int yatzy(int d1, int d2, int d3, int d4, int d5)
     {
-        List<Integer> dices = Arrays.asList(d1, d2, d3, d4, d5);
+        List<Integer> dices = dicesAsList(d1, d2, d3, d4, d5);
         if (dices.stream().allMatch(dice -> Objects.equals(dice, dices.get(0)))) {
             return 50;
         }
@@ -221,6 +221,10 @@ public class Yatzy {
             return _2_at * 2 + _3_at * 3;
         else
             return 0;
+    }
+
+    private List<Integer> dicesAsList(int d1, int d2, int d3, int d4, int d5) {
+        return Arrays.asList(d1, d2, d3, d4, d5);
     }
 }
 
